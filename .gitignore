@@ -1,0 +1,8 @@
+**/target
+**/data
+pom.xml
+
+**/classes/**
+**/Workshop/classes/**
+
+**/.DS_Store/**

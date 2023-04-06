@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+</head>
+<body>
+    <h1>Order Details</h1>
+    <form>
+        <label for="orderId">Order Id:</label>
+        <input type="text" id="orderId" name="orderId">
+        <button type="button" onclick="searchOrderDetails()">Search</button>
+        <hr>
+       <div id = "json"></div> 
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+
+    <script>
+            function searchOrderDetails(){
+                var orderId = $("#orderId").val();
+
+                $.ajax({
+                    url : '/order/total/'+orderId,
+                    success: function(data){
+                        $("#json").html(`
+                        <span>Order Id : ${data.order_id} </span><br>
+                        <span>customer Id : ${data.customer_id} </span><br>
+                        <span>Order Date : ${data.order_date} </span><br>
+                        <span>Discounted Price : ${data.discounted_price} </span><br>
+                        <span>cost Price : ${data.cost_price} </span><br>
+                        `);
+                    }, 
+                    error: function(e, status, error){
+                        $('#json').html(`<span> Not Order Details Found ${error} </span>`);
+                    }
+                });
+            }
+    </script>
+</body>
+</html>

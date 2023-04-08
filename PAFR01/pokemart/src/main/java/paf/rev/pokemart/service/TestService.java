@@ -8,7 +8,6 @@ import java.util.Random;
 import jakarta.json.JsonObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import paf.rev.pokemart.model.Item;
@@ -21,13 +20,13 @@ public class TestService {
     private PokeAPIService papis;
 
     private int size = 5;
-    private List<Item> testInventory = new ArrayList<>();
+    private List<Item> testDatabase = new ArrayList<>();
     
     
     public TestService() {
     }
 
-    public void createTestInventory(){
+    public void createTestItemDatabase(){
         Random rand = new Random();
         for (int i = 0; i<this.size;){
             try{
@@ -36,7 +35,7 @@ public class TestService {
                 if(itemJsonStr.isEmpty()) continue;
 
                 JsonObject itemJson = JsonUtil.JsonStr2Obj(itemJsonStr.get());
-                this.testInventory.add(Item.ItemFromJson(itemJson));
+                this.testDatabase.add(Item.ItemFromJson(itemJson));
                 System.out.println(">>> Downloading...");
                 Thread.sleep(1000); //sleep to prevent api limit
                 i += 1;
@@ -53,12 +52,7 @@ public class TestService {
         return size;
     }
 
-    public List<Item> getTestInventory() {
-        return testInventory;
+    public List<Item> getTestDatabase() {
+        return testDatabase;
     }
-
-
-
-
-    
 }

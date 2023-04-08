@@ -1,8 +1,7 @@
 package paf.rev.pokemart.model;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.List;
 
 public class Order {
 
@@ -11,163 +10,92 @@ public class Order {
         PAYNOW,
         ONDELIVERY
     }
-
-    //get latest order_id from DB+1
-    private int order_id;
-    private LocalDate orderDate;
-
-    //Customer information can be from session or from DB
-    private String customerName;
-    private String customerPhone;
-    private String customerEmail;
-    private String shippingAddress;
-    private PayMethod paymentMethod;
-    
-    //item_ID,Qty //Decription, Price will be pulled from DB;
-    Map<Integer,Integer> orderItems; 
-
-    //calculated methods
-    private BigDecimal subtotal;
-    private BigDecimal discount;
-    private BigDecimal tax;
-    private BigDecimal shippingFee;
-    private BigDecimal total;
-
-
-
     public static Order.PayMethod[] allPaymentMethods(){
         return PayMethod.values(); //return string array instead?
     }
 
-    // GETTERS AND SETTERS
-    public int getOrder_id() {
-        return order_id;
-    }
+    private LocalDate orderDate;
+    //OrderID get latest/findlast id from database 
+    private int order_id;
+    //Customer information can be from session or from DB
+    private int customer_id;
+    //item_ID,Qty //Decription, Price will be pulled from DB;
+    List<Quantity> orderItems; 
+    //calculated methods
+    private double subtotal;
+    private double discount;
+    private double tax;
+    private double shippingFee;
+    private double total;
 
-    public void setOrder_id(int order_id) {
-        this.order_id = order_id;
-    }
 
-
+    //GETTERS AND SETTERS
     public LocalDate getOrderDate() {
         return orderDate;
     }
-
-
     public void setOrderDate(LocalDate orderDate) {
         this.orderDate = orderDate;
     }
-
-
-    public String getCustomerName() {
-        return customerName;
+    public int getOrder_id() {
+        return order_id;
     }
-
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setOrder_id(int order_id) {
+        this.order_id = order_id;
     }
-
-
-    public String getCustomerPhone() {
-        return customerPhone;
+    public int getCustomer_id() {
+        return customer_id;
     }
-
-
-    public void setCustomerPhone(String customerPhone) {
-        this.customerPhone = customerPhone;
+    public void setCustomer_id(int customer_id) {
+        this.customer_id = customer_id;
     }
-
-
-    public String getCustomerEmail() {
-        return customerEmail;
-    }
-
-
-    public void setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
-    }
-
-
-    public String getShippingAddress() {
-        return shippingAddress;
-    }
-
-
-    public void setShippingAddress(String shippingAddress) {
-        this.shippingAddress = shippingAddress;
-    }
-
-
-    public Map<Integer, Integer> getOrderItems() {
+    public List<Quantity> getOrderItems() {
         return orderItems;
     }
-
-
-    public void setOrderItems(Map<Integer, Integer> orderItems) {
+    public void setOrderItems(List<Quantity> orderItems) {
         this.orderItems = orderItems;
     }
-
-
-    public BigDecimal getSubtotal() {
+    public double getSubtotal() {
         return subtotal;
     }
-
-
-    public void setSubtotal(BigDecimal subtotal) {
+    public void setSubtotal(double subtotal) {
         this.subtotal = subtotal;
     }
-
-
-    public BigDecimal getDiscount() {
+    public double getDiscount() {
         return discount;
     }
-
-
-    public void setDiscount(BigDecimal discount) {
+    public void setDiscount(double discount) {
         this.discount = discount;
     }
-
-
-    public BigDecimal getTax() {
+    public double getTax() {
         return tax;
     }
-
-
-    public void setTax(BigDecimal tax) {
+    public void setTax(double tax) {
         this.tax = tax;
     }
-
-
-    public BigDecimal getShippingFee() {
+    public double getShippingFee() {
         return shippingFee;
     }
-
-
-    public void setShippingFee(BigDecimal shippingFee) {
+    public void setShippingFee(double shippingFee) {
         this.shippingFee = shippingFee;
     }
-
-
-    public BigDecimal getTotal() {
+    public double getTotal() {
         return total;
     }
-
-
-    public void setTotal(BigDecimal total) {
+    public void setTotal(double total) {
         this.total = total;
     }
 
-
-    public PayMethod getPaymentMethod() {
-        return paymentMethod;
-    }
-
-
-    public void setPaymentMethod(PayMethod paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
+/*
+ CREATE TABLE orders(
+    orderDate,
+    customer_id,
+    subtotal,
+    discount,
+    tax,
+    shippingFee,
+    total
+ )
+ */
 
     
 }

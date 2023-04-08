@@ -26,5 +26,6 @@ public class PokeAPIController {
         } catch(NumberFormatException numErr){
             return "{\"error\": \"Item ID should be an integer\"}";
         }
-    }   
+    }
+    
 }

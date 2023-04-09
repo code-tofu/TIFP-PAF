@@ -15,7 +15,7 @@ import paf.rev.pokemart.model.Item;
 import static paf.rev.pokemart.repository.DBqueries.*;
 
 @Repository
-public class ItemRepoSQL {
+public class ItemRepo {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -59,6 +59,55 @@ public class ItemRepoSQL {
         return item_ids;
     }
 
+    public List<String> getNoStock(){
+        List<String> empty_invt = new ArrayList<>();
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_NOSTOCK);
+        while (rs.next()){
+            empty_invt.add(rs.getString("item_id"));
+        }
+        return empty_invt;
+    }
+
+    public List<String> getStock(){
+        List<String> stocked_invt = new ArrayList<>();
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_STOCK);
+        while (rs.next()){
+            stocked_invt.add(rs.getString("item_id"));
+        }
+        return stocked_invt;
+    }
+
+    public List<String> getAllStock(){
+        List<String> all_invt = new ArrayList<>();
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_ALLSTOCK);
+        while (rs.next()){
+            all_invt.add(rs.getString("item_id"));
+        }
+        return all_invt;
+    }
+
+    public int getStockLevel(int item_id){
+        
+
+
+    }
+
+    public void upsertStock(int item_id){
+
+
+
+
+    }
+
+    public int createStock(){
+        List<String> all_items = getAllItemIds(9999, 0);
+        for(String item : all_items){
+
+        }
+
+        
+
+    }
 
 }
 
@@ -72,3 +121,4 @@ public class ItemRepoSQL {
     private String spriteSRCapi;
     private String spriteSRClocal;
      */
+

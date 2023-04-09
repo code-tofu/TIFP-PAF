@@ -14,28 +14,27 @@ import paf.rev.pokemart.model.Item;
 import paf.rev.pokemart.util.JsonUtil;
 
 @Service
-public class TestService {
+public class AdminService {
 
     @Autowired
     private PokeAPIService papis;
 
-    private int size = 5;
-    private List<Item> testDatabase = new ArrayList<>();
+    private List<Item> newDatabase = new ArrayList<>();
     
     
-    public TestService() {
+    public AdminService() {
     }
 
-    public void createTestItemDatabase(){
+    public void createNewDatabase(int size){
         Random rand = new Random();
-        for (int i = 0; i<this.size;){
+        for (int i = 0; i<size;){
             try{
                 int randInt = rand.nextInt(999)+1;
                 Optional<String> itemJsonStr = papis.getItemData(randInt);
                 if(itemJsonStr.isEmpty()) continue;
 
                 JsonObject itemJson = JsonUtil.JsonStr2Obj(itemJsonStr.get());
-                this.testDatabase.add(Item.ItemFromJson(itemJson));
+                this.newDatabase.add(Item.ItemFromJson(itemJson));
                 System.out.println(">>> Downloading...");
                 Thread.sleep(1000); //sleep to prevent api limit
                 i += 1;
@@ -43,16 +42,11 @@ public class TestService {
                 System.out.println(">>> Downloading Interrupted. Restarting Download");
             }
         }
-        System.out.println(">>> Created Test Inventory of Size " + this.size);
+        System.out.println(">>> Created New Database of Size " + size);
     }
 
-    
 
-    public int getSize() {
-        return size;
-    }
-
-    public List<Item> getTestDatabase() {
-        return testDatabase;
+    public List<Item> getNewDatabase() {
+        return newDatabase;
     }
 }

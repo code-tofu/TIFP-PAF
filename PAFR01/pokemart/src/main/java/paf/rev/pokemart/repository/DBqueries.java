@@ -2,14 +2,19 @@ package paf.rev.pokemart.repository;
 
 public class DBqueries {
 
-    //ITEM QUERIES
+    //ITEM REPO
     public static final String INSERT_NEW_ITEM ="INSERT INTO items (item_id, name_id, name, cost, description, category) VALUES (?, ?, ?, ?, ?, ?)";
     public static final String SELECT_ITEM_BY_ITEM_ID ="SELECT * FROM items WHERE item_id = ?";
-    // order by should precede limit clause. might need to use limit ? , ?
     public static final String SELECT_ALL_ITEM_ID = "SELECT item_id FROM items ORDER BY item_id LIMIT ? OFFSET ?";
 
+    //INVENTORY REPO
+    public static final String SELECT_NOSTOCK = "SELECT item_id FROM inventory WHERE quantity = 0";
+    public static final String SELECT_STOCK = "SELECT item_id FROM inventory WHERE quantity > 0";
+    public static final String SELECT_ALLSTOCK = "SELECT item_id, quantity FROM inventory";
+    public static final String RESTOCK_INVENTORY = "UPDATE inventory SET quantity = ? WHERE quantity = 0";
 
 }
+    // order by should precede limit clause. might need to use limit ? , ?
 
 /* ITEM.DB
 private int item_id;
@@ -47,7 +52,8 @@ CREATE TABLE inventory(
 item_id INT NOT NULL,
 quantity INT NOT NULL,
 PRIMARY KEY(item_id),
-FOREIGN KEY(item_id) REFERENCES items(item_id)
+FOREIGN KEY(item_id) REFERENCES items(item_id),
+CHECK (quantity>=0)
 );
 
 +----------+------+------+-----+---------+-------+

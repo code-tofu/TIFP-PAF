@@ -1,9 +1,23 @@
 package paf.rev.pokemart.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import paf.rev.pokemart.repository.OrderRepo;
+import paf.rev.pokemart.service.CartService;
 
 public class Order {
+
+    @Autowired @Qualifier("Order")
+    OrderRepo orderRepo;
+
+    @Autowired
+    CartService cartSvc;
 
     enum PayMethod{
         CREDIT,
@@ -14,7 +28,9 @@ public class Order {
         return PayMethod.values(); //return string array instead?
     }
 
-    private LocalDate orderDate;
+    private PayMethod paymentMethod;
+
+    private LocalDateTime orderDateTime;
     //OrderID get latest/findlast id from database 
     private int order_id;
     //Customer information can be from session or from DB
@@ -22,19 +38,36 @@ public class Order {
     //item_ID,Qty //Decription, Price will be pulled from DB;
     List<Quantity> orderItems; 
     //calculated methods
-    private double subtotal;
-    private double discount;
-    private double tax;
-    private double shippingFee;
-    private double total;
+    private double subtotal; //from cartItems
+    private double discount; //from promocode
+    private double tax; //8%
+    private double shippingFee; //express or not
+    private double total; //sum total
 
+
+    public Order createOrder(int customer_id, ArrayList<Quantity> cart, Map<String,String> cart_details){
+        Order newOrder = new Order();
+        LocalDateTime now = LocalDateTime.now();
+        newOrder.setOrderDateTime(now);
+        
+        newOrder.setCustomer_id(customer_id);
+        newOrder.setOrderItems(cart);
+        
+        Map<String,Double> cost = cartSvc.calculateTotal(cart, cart_details);
+        newOrder.setSubtotal(cost.get("subtotal"));
+        newOrder.setDiscount(cost.get("discount"));
+        newOrder.setTax(cost.get("tax"));
+        newOrder.setShippingFee(cost.get("shippingFee"));
+        newOrder.setTotal(cost.get("total"));
+        return newOrder;
+    }
 
     //GETTERS AND SETTERS
-    public LocalDate getOrderDate() {
-        return orderDate;
+    public LocalDateTime getOrderDateTime() {
+        return orderDateTime;
     }
-    public void setOrderDate(LocalDate orderDate) {
-        this.orderDate = orderDate;
+    public void setOrderDateTime(LocalDateTime orderDate) {
+        this.orderDateTime = orderDate;
     }
     public int getOrder_id() {
         return order_id;
@@ -84,18 +117,16 @@ public class Order {
     public void setTotal(double total) {
         this.total = total;
     }
+    public PayMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+    public void setPaymentMethod(PayMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
 
-/*
- CREATE TABLE orders(
-    orderDate,
-    customer_id,
-    subtotal,
-    discount,
-    tax,
-    shippingFee,
-    total
- )
- */
+    
+
+
 
     
 }

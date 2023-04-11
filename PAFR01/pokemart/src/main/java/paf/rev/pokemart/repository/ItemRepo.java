@@ -14,7 +14,7 @@ import paf.rev.pokemart.model.Item;
 
 import static paf.rev.pokemart.repository.DBqueries.*;
 
-@Repository
+@Repository("Item")
 public class ItemRepo {
 
     @Autowired
@@ -28,13 +28,21 @@ public class ItemRepo {
         }
         return Optional.empty();
     }
+
+    public Optional<Double> getItemCostbyId(int item_id){
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_COST_BY_ITEM_ID,item_id);
+        double cost;
+        if(rs.next()){
+            cost = rs.getDouble("cost");
+            return Optional.of(cost);
+        }
+        return Optional.empty();
+    }
     
     //Using prepared statement
     public int createItem(Item item){
         Optional<Item> existingItem = getItembyId(item.getItem_id());
         if(existingItem.isPresent()) return 0;
-        // INSERT_NEW_ITEM ="INSERT INTO items (item_id, name_id, name, cost, description, category, imgsrc_api, imgsrc_local)
-        // VALUES (?, ?, ?, ?, ?, ?)";
         return jdbcTemplate.update(conn -> {
             PreparedStatement statement = conn.prepareStatement(INSERT_NEW_ITEM);
             statement.setInt(1,item.getItem_id());
@@ -59,66 +67,5 @@ public class ItemRepo {
         return item_ids;
     }
 
-    public List<String> getNoStock(){
-        List<String> empty_invt = new ArrayList<>();
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_NOSTOCK);
-        while (rs.next()){
-            empty_invt.add(rs.getString("item_id"));
-        }
-        return empty_invt;
-    }
-
-    public List<String> getStock(){
-        List<String> stocked_invt = new ArrayList<>();
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_STOCK);
-        while (rs.next()){
-            stocked_invt.add(rs.getString("item_id"));
-        }
-        return stocked_invt;
-    }
-
-    public List<String> getAllStock(){
-        List<String> all_invt = new ArrayList<>();
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_ALLSTOCK);
-        while (rs.next()){
-            all_invt.add(rs.getString("item_id"));
-        }
-        return all_invt;
-    }
-
-    public int getStockLevel(int item_id){
-        
-
-
-    }
-
-    public void upsertStock(int item_id){
-
-
-
-
-    }
-
-    public int createStock(){
-        List<String> all_items = getAllItemIds(9999, 0);
-        for(String item : all_items){
-
-        }
-
-        
-
-    }
 
 }
-
-    /*
-    private int item_id;
-    private String name_id;
-    private String name;
-    private double cost;
-    private String description;
-    private String category;
-    private String spriteSRCapi;
-    private String spriteSRClocal;
-     */
-

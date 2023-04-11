@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Document</title>
+
+</head>
+
+<body>
+  <h1>Shopping Cart</h1>
+
+
+  <form method="POST" action="/order">
+    <table>
+
+      <tr>
+        <td>Item:</td>
+        <td>
+            <select name="item" required>
+                <option value="" disabled selected>Select an item</option>
+                <option value="Apple">Apple</option>
+                <option value="Banana">Banana</option>
+                <option value="Orange">Orange</option>
+                <option value="Pear">Pear</option>
+                <option value="Pineapple">Pineapple</option>
+                <option value="Grapes">Grapes</option>
+                <option value="Kiwi">Kiwi</option>
+              </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Quantity:</td>
+        <td><input type="number" name="quantity" min="1" value="1" /></td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td><button type="submit">Add</button></td>
+      </tr>
+    </table>
+  </form>
+
+  <h2>Contents</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr data-th-each="li: ${lineItems}">
+        <td><span data-th-text="${li.product}"></span></td>
+        <td><span data-th-text="${li.quantity}"></span></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">
+          <form method="POST" action="/checkout" onsubmit="return validateCheckout()">
+      <tr>
+        <td>Customer name:</td>
+        <td><input type="text" name="name" required /></td>
+      </tr>
+
+      <tr>
+        <td>Shipping Address:</td>
+        <td><input type="text" id="ship_address" name="ship_address" required /></td>
+      </tr>
+
+      <tr>
+        <td>Notes:</td>
+        <td><textarea id="notes" name="notes"></textarea></td>
+      </tr>
+      <tr>
+        <td colspan="2" style="padding-top: 10px;">
+          <button type="submit">Checkout</button>
+        </td>
+      </tr>
+      </form>
+      </td>
+      </tr>
+    </tfoot>
+
+  </table>
+
+
+  <script>
+    function validateCheckout() {
+
+      var shipAddress = document.getElementsByName("ship_address")[0].value;
+      //  alert(shipAddress);
+      if (shipAddress === "") {
+        alert("Please enter a shipping address.");
+        return false;
+      }
+      return true;
+    }
+  </script>
+</body>
+
+</html>

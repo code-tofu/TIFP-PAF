@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Shopping Cart</h1>
+
+    <form method="POST" action="/order">
+        <table>
+
+            <tr>
+                <td>Item:</td>
+                <td>
+                    <select name="item" required>
+                        <option value="" disabled selected>Select an item</option>
+                        <option value="Apple">Apple</option>
+                        <option value="Banana">Banana</option>
+                        <option value="Orange">Orange</option>
+                        <option value="Pear">Pear</option>
+                        <option value="Pineapple">Pineapple</option>
+                        <option value="Grapes">Grapes</option>
+                        <option value="Kiwi">Kiwi</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Quantity:</td>
+                <td><input type="number" name="quantity" min="1" value="1" /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="submit">Add</button></td>
+            </tr>
+        </table>
+    </form>
+</body>
+
+</html>

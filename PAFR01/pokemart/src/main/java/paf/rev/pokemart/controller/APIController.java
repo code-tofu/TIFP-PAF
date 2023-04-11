@@ -25,11 +25,11 @@ public class APIController {
             int itemID = Integer.parseInt(id);
             Optional<Item> itemdata = itemRepo.getItembyId(itemID);
             if(itemdata.isEmpty()){
-                return "{\"error\": \"Item does not exist\"}";
+                return "{\"404 error\": \"Item does not exist\"}";
             }
             return itemdata.get().toString();
         } catch(NumberFormatException numErr){
-            return "{\"error\": \"Item ID should be an integer\"}";
+            return "{\"400 error\": \"Item ID should be an integer\"}";
         }
     }
     
@@ -41,11 +41,11 @@ public class APIController {
             System.out.println(">>> Getting item_ids limit " + limit + " offset " + offset);
             List<String> item_id_list= itemRepo.getAllItemIds(limit, offset);
             if(item_id_list.isEmpty()){
-                return "{\"error\": \"Database is Empty\"}";
+                return "{\"404 error\": \"Database is Empty\"}";
             }
             return item_id_list.toString();
         } catch(NumberFormatException numErr){
-            return "{\"error\": \"Item ID should be an integer\"}";
+            return "{\"400 error\": \"Item ID should be an integer\"}";
         }
     }
 }

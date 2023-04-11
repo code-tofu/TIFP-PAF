@@ -1,4 +1,9 @@
 //CONFIGURE PACKAGE
+// spring.data.redis.host=${REDISHOST}
+// spring.data.redis.port=${REDISPORT}
+// spring.data.redis.user=${REDISUSER}
+// spring.data.redis.password=${REDISPASSWORD}
+// spring.data.redis.client.type=jedis
 
 import java.util.Optional;
 

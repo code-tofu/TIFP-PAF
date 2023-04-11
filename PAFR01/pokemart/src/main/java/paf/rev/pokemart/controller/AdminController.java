@@ -4,12 +4,15 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import paf.rev.pokemart.model.Item;
+import paf.rev.pokemart.repository.InventoryRepo;
 import paf.rev.pokemart.repository.ItemRepo;
 import paf.rev.pokemart.service.AdminService;
 import paf.rev.pokemart.service.PokeAPIService;
@@ -19,12 +22,15 @@ public class AdminController {
 
     @Autowired private PokeAPIService papis;
     @Autowired private AdminService adminSvc;
-    @Autowired private ItemRepo itemRepo;
+    @Autowired @Qualifier("Item")
+    private ItemRepo itemRepo;
+    @Autowired 
+    private InventoryRepo invtRepo;
 
     //change to take in int var for number of items to create
     //remove "test"
-    @GetMapping("/admin/item/insertDB/{size}") 
-    @ResponseBody public String insertDatabase(@PathVariable int size){
+    @GetMapping("/admin/item/insertDB") 
+    @ResponseBody public String insertDatabase(@RequestParam int size){
         adminSvc.createNewDatabase(size);
         int addCount = 0;
         for(Item item: adminSvc.getNewDatabase()){
@@ -39,19 +45,36 @@ public class AdminController {
     }   
     @GetMapping("/admin/item/api/{id}") 
     @ResponseBody public String displayFullItemData(@PathVariable String id){
-        int itemID;
         try{
-            itemID = Integer.parseInt(id);
+            int itemID = Integer.parseInt(id);
             Optional<String> itemdata = papis.getItemData(itemID);
-            if (itemdata.isEmpty()) return "{\"error\": \"Item does not exist\"}";
+            if (itemdata.isEmpty()) return "{\"404 error\": \"Item does not exist\"}";
             return itemdata.get(); //TODO: code chuk's explcit JSON convertors
         } catch(NumberFormatException numErr){
-            return "{\"error\": \"Item ID should be an integer\"}";
+            return "{\"400 error\": \"Item ID should be an integer\"}";
         }
     }
 
-    // @GetMapping("admin/inventory/insertDB")
-    // @ResponseBody  
+    @GetMapping("/admin/stock/create")
+    @ResponseBody public String createStock(){
+        int newstock = invtRepo.createStockfromDB();
+        return "{\"201 Created\": \" %d new stock created in Inventory  \"}".formatted(newstock); //return 201
+    }
+
+    @GetMapping("/admin/stock/upsert")
+    @ResponseBody public String upsertStock(@RequestParam String id, @RequestParam String qty){
+        try{ 
+            int itemID = Integer.parseInt(id);
+            Optional<String> itemdata = papis.getItemData(itemID);
+            if (itemdata.isEmpty()) return "{\"error\": \"Item does not exist\"}";
+
+            int upsert = invtRepo.upsertStockinDB(itemID, Integer.parseInt(qty));
+            if(upsert == 1) return "{\"201 Created\": \" New item %s created in Inventory with Quantity %s \" }".formatted(id,qty);
+            if(upsert == 0) return "{\"200 Success\": \" Item %s stock in Inventory updated to %s \" }".formatted(id,qty);
+        } catch(NumberFormatException numErr){
+            return "{\"400 error\": \"Item ID or Quantity should be an integer\"}";
+        } return "{\"500 error\": \" Internal Server Error\"}";
+    }
 
     
     

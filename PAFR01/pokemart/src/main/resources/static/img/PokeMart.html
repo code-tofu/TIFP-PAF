@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<!-- saved from url=(0031)http://localhost:8080/mart/main -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeMart</title>
+    <!-- Bootstrap Stylesheet -->
+    <link rel="stylesheet" href="./PokeMart_files/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Custom Stylehsheet -->
+    <link href="./PokeMart_files/default.css" rel="stylesheet">
+    <link href="./PokeMart_files/cart.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="page_container">
+
+        <nav class="navbar navbar-light bg-light justify-content-between rounded-bottom">
+            <img class="logo rounded" src="./PokeMart_files/logo.jpg" alt="logo">
+            <form class="form-inline" action="http://localhost:8080/temp">
+                <input class="form-control" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </nav>
+
+
+        <div>
+            <form action="http://localhost:8080/mart/main#" method="POST"></form>
+            <footer class="footer bg-light rounded-top">
+            <div class="container">
+                <span class="fs-6">Poké Mart Logo by <a href="https://www.domestika.org/en/thedesmonddu">Desmond Du</a>
+                </span>
+            </div>
+        </footer><table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width:20%;text-align:center">Product Photo</th>
+                        <th scope="col" style="width:40%">Item</th>
+                        <th scope="col" style="width:20%">Price</th>
+                        <th scope="col" style="width:20%;text-align:center">Quick Add</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><img src="./PokeMart_files/ether.png" onerror="this.onerror=null;this.src=&#39;/img/default-sprite.png&#39;;" class="cart-img rounded-circle width-60"></td>
+                        <td><a href="http://localhost:8080/mart/item/38">Ether</a></td>
+                        <td>1200.0</td>
+                        <td><input type="number" step="1" min="0" max="99" class="form-control" placeholder="Quantity" style="text-align:center"></td>
+                    </tr>
+                    <tr>
+                        <td><img src="./PokeMart_files/yellow-flute.png" onerror="this.onerror=null;this.src=&#39;/img/default-sprite.png&#39;;" class="cart-img rounded-circle width-60"></td>
+                        <td><a href="http://localhost:8080/mart/item/66">Yellow Flute</a></td>
+                        <td>20.0</td>
+                        <td><input type="number" step="1" min="0" max="99" class="form-control" placeholder="Quantity" style="text-align:center"></td>
+                    </tr>
+                    <tr>
+                        <td><img src="./PokeMart_files/pecha-berry.png" onerror="this.onerror=null;this.src=&#39;/img/default-sprite.png&#39;;" class="cart-img rounded-circle width-60"></td>
+                        <td><a href="http://localhost:8080/mart/item/128">Pecha Berry</a></td>
+                        <td>80.0</td>
+                        <td><input type="number" step="1" min="0" max="99" class="form-control" placeholder="Quantity" style="text-align:center"></td>
+                    </tr>
+                    <tr>
+                        <td><img src="./PokeMart_files/tanga-berry.png" onerror="this.onerror=null;this.src=&#39;/img/default-sprite.png&#39;;" class="cart-img rounded-circle width-60"></td>
+                        <td><a href="http://localhost:8080/mart/item/171">Tanga Berry</a></td>
+                        <td>80.0</td>
+                        <td><input type="number" step="1" min="0" max="99" class="form-control" placeholder="Quantity" style="text-align:center"></td>
+                    </tr>
+                    <tr>
+                        <td><img src="./PokeMart_files/starf-berry.png" onerror="this.onerror=null;this.src=&#39;/img/default-sprite.png&#39;;" class="cart-img rounded-circle width-60"></td>
+                        <td><a href="http://localhost:8080/mart/item/184">Starf Berry</a></td>
+                        <td>80.0</td>
+                        <td><input type="number" step="1" min="0" max="99" class="form-control" placeholder="Quantity" style="text-align:center"></td>
+                    </tr>
+                    <tr>
+                        <td><img src="./PokeMart_files/amulet-coin.png" onerror="this.onerror=null;this.src=&#39;/img/default-sprite.png&#39;;" class="cart-img rounded-circle width-60"></td>
+                        <td><a href="http://localhost:8080/mart/item/200">Amulet Coin</a></td>
+                        <td>10000.0</td>
+                        <td><input type="number" step="1" min="0" max="99" class="form-control" placeholder="Quantity" style="text-align:center"></td>
+                    </tr>
+                    <tr>
+                        <td><img src="./PokeMart_files/up-grade.png" onerror="this.onerror=null;this.src=&#39;/img/default-sprite.png&#39;;" class="cart-img rounded-circle width-60"></td>
+                        <td><a href="http://localhost:8080/mart/item/229">Upgrade</a></td>
+                        <td>2000.0</td>
+                        <td><input type="number" step="1" min="0" max="99" class="form-control" placeholder="Quantity" style="text-align:center"></td>
+                    </tr>
+                    <tr>
+                        <td><img src="./PokeMart_files/full-incense.png" onerror="this.onerror=null;this.src=&#39;/img/default-sprite.png&#39;;" class="cart-img rounded-circle width-60"></td>
+                        <td><a href="http://localhost:8080/mart/item/293">Full Incense</a></td>
+                        <td>5000.0</td>
+                        <td><input type="number" step="1" min="0" max="99" class="form-control" placeholder="Quantity" style="text-align:center"></td>
+                    </tr>
+                    <tr>
+                        <td><img src="./PokeMart_files/default-sprite.png" onerror="this.onerror=null;this.src=&#39;/img/default-sprite.png&#39;;" class="cart-img rounded-circle width-60"></td>
+                        <td><a href="http://localhost:8080/mart/item/344">TM40</a></td>
+                        <td>1000.0</td>
+                        <td><input type="number" step="1" min="0" max="99" class="form-control" placeholder="Quantity" style="text-align:center"></td>
+                    </tr>
+                    <tr>
+                        <td><img src="./PokeMart_files/default-sprite.png" onerror="this.onerror=null;this.src=&#39;/img/default-sprite.png&#39;;" class="cart-img rounded-circle width-60"></td>
+                        <td><a href="http://localhost:8080/mart/item/372">TM68</a></td>
+                        <td>30000.0</td>
+                        <td><input type="number" step="1" min="0" max="99" class="form-control" placeholder="Quantity" style="text-align:center"></td>
+                    </tr>
+                    </tbody>
+                
+        
+
+        
+    
+    <!-- Bootstrap JS -->
+    <script src="./PokeMart_files/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="./PokeMart_files/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="./PokeMart_files/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+
+
+
+</table></div></div></body></html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            td { padding: 10px; }
+        </style>
+    </head>
+    <body>
+        <table border="1">
+            <tr data-th-each="r: ${results}">
+                <td>
+                    
+                    <div><img th:src="${r.image}"/></div>
+                    <div>Id: <span data-th-text="${r.gid}"></span></div>
+                    <div>Game: <i data-th-text="${r.name}"></i></div>
+                    <div>Ranking: <i data-th-text="${r.ranking}"></i></div>
+                    <div>Year: <i data-th-text="${r.year}"></i></div>
+                </td>
+            </tr>
+        </table>
+</body>
+</html>

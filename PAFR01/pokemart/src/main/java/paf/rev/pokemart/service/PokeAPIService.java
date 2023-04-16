@@ -33,7 +33,7 @@ public class PokeAPIService {
             // System.out.println(resp.getBody());
             return Optional.of(resp.getBody());
         }
-        catch(HttpClientErrorException e){ //TODO:need to handle 404 and 500
+        catch(HttpClientErrorException e){ //TODO: Need to handle 404 and 500
             return Optional.empty();
         }
     }

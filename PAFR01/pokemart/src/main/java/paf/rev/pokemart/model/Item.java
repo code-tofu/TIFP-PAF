@@ -40,14 +40,14 @@ public class Item {
         return item;
     }
 
-    //SQL METHODS
+    //SQL METHODS CREATE INSTEAD OF ROWMAPPER
     public static Item ItemFromRowset(SqlRowSet itemRowset){
         Item item = new Item();
         item.setItem_id(itemRowset.getInt("item_id"));
         item.setName_id(itemRowset.getString("name_id"));
         item.setName(itemRowset.getString("name"));
         item.setCost(itemRowset.getDouble("cost"));
-        item.setDescription(itemRowset.getString("desription"));
+        item.setDescription(itemRowset.getString("description"));
         item.setCategory(itemRowset.getString("category"));
         item.setImgSrcApi(srcApi + itemRowset.getString("name_id") +".png");
         item.setImgSrcLocal(srcLocal + itemRowset.getString("name_id") +".png");
@@ -148,37 +148,3 @@ public class Item {
 }
 
 
-/* {
-    "cost": 0,
-    "category": {
-    "name": "standard-balls",
-    }
-    "flavor_text_entries": [
-            {
-                "language": {
-                    "name": "en",
-                    "url": "https://pokeapi.co/api/v2/language/9/"
-                },
-                "text": "The best BALL that\ncatches a POKéMON\nwithout fail.",
-                "version_group": {
-                    "name": "ruby-sapphire",
-                    "url": "https://pokeapi.co/api/v2/version-group/5/"
-                }
-    }, ...
-    ],
-    "id": 1,
-    "name": "master-ball",
-    "names": [
-    {
-        "language": {
-            "name": "en",
-            "url": "https://pokeapi.co/api/v2/language/9/"
-        },
-        "name": "Master Ball"
-    },...
-    ],
-    "sprites": {
-    "default": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png"
-    }
-
-} */

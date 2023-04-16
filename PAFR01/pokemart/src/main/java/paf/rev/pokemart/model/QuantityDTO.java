@@ -1,6 +1,6 @@
 package paf.rev.pokemart.model;
 
-public class Quantity {
+public class QuantityDTO {
 
     private int item_id;
     private int item_qty;
@@ -20,5 +20,18 @@ public class Quantity {
     @Override
     public String toString() {
         return "Quantity [item_id=" + item_id + ", item_qty=" + item_qty + "]";
-    }    
+    }
+    
+    public QuantityDTO() {
+    }
+    public QuantityDTO(int item_id, int item_qty) {
+        this.item_id = item_id;
+        this.item_qty = item_qty;
+    }
+    public QuantityDTO(int item_qty) {
+        this.item_qty = item_qty;
+    }
+    
+
+    
 }

@@ -22,15 +22,16 @@ public class AdminController {
 
     @Autowired private PokeAPIService papis;
     @Autowired private AdminService adminSvc;
+
     @Autowired @Qualifier("Item")
     private ItemRepo itemRepo;
+
     @Autowired 
     private InventoryRepo invtRepo;
 
-    //change to take in int var for number of items to create
-    //remove "test"
-    @GetMapping("/admin/item/insertDB") 
-    @ResponseBody public String insertDatabase(@RequestParam int size){
+
+    @GetMapping("/admin/item/createItemsFromAPI") 
+    @ResponseBody public String createItemsFromApi(@RequestParam int size){
         adminSvc.createNewDatabase(size);
         int addCount = 0;
         for(Item item: adminSvc.getNewDatabase()){
@@ -42,26 +43,17 @@ public class AdminController {
         return Arrays
         .toString(adminSvc.getNewDatabase()
         .toArray());
-    }   
-    @GetMapping("/admin/item/api/{id}") 
-    @ResponseBody public String displayFullItemData(@PathVariable String id){
-        try{
-            int itemID = Integer.parseInt(id);
-            Optional<String> itemdata = papis.getItemData(itemID);
-            if (itemdata.isEmpty()) return "{\"404 error\": \"Item does not exist\"}";
-            return itemdata.get(); //TODO: code chuk's explcit JSON convertors
-        } catch(NumberFormatException numErr){
-            return "{\"400 error\": \"Item ID should be an integer\"}";
-        }
     }
 
-    @GetMapping("/admin/stock/create")
+
+    @GetMapping("/admin/stock/createStockFromDB")
     @ResponseBody public String createStock(){
         int newstock = invtRepo.createStockfromDB();
         return "{\"201 Created\": \" %d new stock created in Inventory  \"}".formatted(newstock); //return 201
     }
 
-    @GetMapping("/admin/stock/upsert")
+
+    @GetMapping("/admin/stock/upsertStock")
     @ResponseBody public String upsertStock(@RequestParam String id, @RequestParam String qty){
         try{ 
             int itemID = Integer.parseInt(id);
@@ -76,6 +68,18 @@ public class AdminController {
         } return "{\"500 error\": \" Internal Server Error\"}";
     }
 
-    
-    
+
+    @GetMapping("/admin/item/getItemFromAPI/{id}") 
+    @ResponseBody public String getItemDataFromApi(@PathVariable String id){
+        try{
+            int itemID = Integer.parseInt(id);
+            Optional<String> itemdata = papis.getItemData(itemID);
+            if (itemdata.isEmpty()) return "{\"404 error\": \"Item does not exist\"}";
+            return itemdata.get(); //TODO: Code chuk's explcit JSON convertors
+        } catch(NumberFormatException numErr){
+            return "{\"400 error\": \"Item ID should be an integer\"}";
+        }
+    }
+
 }
+

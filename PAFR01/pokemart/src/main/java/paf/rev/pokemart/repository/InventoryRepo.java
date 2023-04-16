@@ -6,6 +6,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 
+import paf.rev.pokemart.model.Item;
+import paf.rev.pokemart.model.ItemMapper;
+
 import static paf.rev.pokemart.repository.DBqueries.*;
 
 import java.util.ArrayList;
@@ -81,6 +84,15 @@ public class InventoryRepo {
             }
         }
         return newstock;
+    }
+
+
+    public List<Item> getAllItemsInInventory(int limit, int offset){
+        return jdbcTemplate.query(SELECT_ALL_INVENTORY_ITEMS, new ItemMapper(),limit,offset);
+    }
+
+    public List<Item> searchItemsInInventory(String search, int limit, int offset){
+        return jdbcTemplate.query(SELECT_INVENTORY_ITEMS_BY_NAME, new ItemMapper(),search,limit,offset);
     }
     
 }

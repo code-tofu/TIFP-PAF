@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import paf.rev.pokemart.model.Quantity;
+import paf.rev.pokemart.model.QuantityDTO;
 import paf.rev.pokemart.repository.ItemRepo;
 
 @Service
@@ -24,12 +24,12 @@ public class CartService {
 
     @Autowired @Qualifier("Item")
     ItemRepo itemRepo;
-    
-    public Map<String,Double> calculateTotal(ArrayList<Quantity> cart, Map<String,String> cart_details){
+
+    public Map<String,Double> calculateTotal(ArrayList<QuantityDTO> cart, Map<String,String> cart_details){
         Map<String,Double> cart_cost = new HashMap<>();
 
         double subtotal = 0.0;
-        for(Quantity item: cart){
+        for(QuantityDTO item: cart){
             Optional<Double> item_cost = itemRepo.getItemCostbyId(item.getItem_id());
             if(item_cost.isEmpty()){
                 continue; //TODO: Need to throw some kind of error, although unlikely.
@@ -39,9 +39,11 @@ public class CartService {
         cart_cost.put("subtotal", subtotal);
 
         double discount = 0.0;
+        //TODO: Add Voucher Feature
         if(false){
-            String promocode = cart_details.get("promocode"); //check voucher from DB and modify discount
-        } //TODO: ADD VOUCHER
+            String promocode = cart_details.get("promocode");
+            //check voucher from DB and modify discount
+        } 
         cart_cost.put("discount", discount);
 
         double shippingFee = 0.0;
@@ -58,4 +60,11 @@ public class CartService {
         return cart_cost;
     }
     
+    public ArrayList<QuantityDTO> createEmptyCartList(int size){
+        ArrayList<QuantityDTO> cartList = new ArrayList<>();
+        for(int i=0; i<size;i++){
+            cartList.add(new QuantityDTO(0));
+        }
+        return cartList;
+    }
 }

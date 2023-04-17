@@ -36,7 +36,7 @@ public class Order {
     //Customer information can be from session or from DB
     private int customer_id;
     //item_ID,Qty //Decription, Price will be pulled from DB;
-    List<Quantity> orderItems; 
+    List<QuantityDTO> orderItems; 
     //calculated methods
     private double subtotal; //from cartItems
     private double discount; //from promocode
@@ -45,7 +45,7 @@ public class Order {
     private double total; //sum total
 
 
-    public Order createOrder(int customer_id, ArrayList<Quantity> cart, Map<String,String> cart_details){
+    public Order createOrder(int customer_id, ArrayList<QuantityDTO> cart, Map<String,String> cart_details){
         Order newOrder = new Order();
         LocalDateTime now = LocalDateTime.now();
         newOrder.setOrderDateTime(now);
@@ -81,10 +81,10 @@ public class Order {
     public void setCustomer_id(int customer_id) {
         this.customer_id = customer_id;
     }
-    public List<Quantity> getOrderItems() {
+    public List<QuantityDTO> getOrderItems() {
         return orderItems;
     }
-    public void setOrderItems(List<Quantity> orderItems) {
+    public void setOrderItems(List<QuantityDTO> orderItems) {
         this.orderItems = orderItems;
     }
     public double getSubtotal() {

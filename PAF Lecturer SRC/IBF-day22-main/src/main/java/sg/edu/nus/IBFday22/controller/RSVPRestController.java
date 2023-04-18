@@ -73,7 +73,7 @@ public class RSVPRestController {
 
     }
 
-
+ //for content type Content-Type: application/x-www-form-urlencoded, use consumes = "application/x-www-form-urlencoded") or MediaType.APPLICATION_FORM_URLENCODED_VALUE and in parameter, use HttpServletRequest instead of RequestBody and get field values from HttpServletRequest object
     @PostMapping(path = "/rsvp", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> insertUpdateRSVP(@RequestBody String json){
         RSVP rsvp = null;
@@ -97,6 +97,7 @@ public class RSVPRestController {
         .body(jsonObject.toString());
     }
 
+     //for content type Content-Type: application/x-www-form-urlencoded, use consumes = "application/x-www-form-urlencoded") or MediaType.APPLICATION_FORM_URLENCODED_VALUE and in parameter, use HttpServletRequest instead of RequestBody and get field values from HttpServletRequest object
     @PutMapping(path = "/rsvp", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> putRSVP(@RequestBody String json){
         RSVP rsvp = null;

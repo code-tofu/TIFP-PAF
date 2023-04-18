@@ -1,13 +1,89 @@
+    // WORKSHOP 21
     public static final String SELECT_ALL_CUSTOMERS = "select id, company, first_name, last_name  from customers limit ? , ?";
     public static final String SELECT_CUSTOMER_BY_ID = "select id, company, first_name, last_name  from customers where id = ?";
     public static final String SELECT_ORDERS_FOR_CUSTOMERS = "select c.id as customer_id, c.company, o.id as order_id,o.ship_name, o.shipping_fee  from customers c, orders1 o where c.id = o.customer_id and customer_id = ?";
+    // WORKSHOP 22
     public static final String SELECT_ALL_RSVP = "select id, name, email, phone, DATE_FORMAT(confirmation_date,\"%d/%m/%Y\") as confirmation_date, comments from rsvp";
     public static final String SELECT_RSVP_BY_NAME = "select id, name, email, phone, DATE_FORMAT(confirmation_date,\"%d/%m/%Y\") as confirmation_date, comments from rsvp where name like ?";
     public static final String SELECT_RSVP_BY_EMAIL ="select * from rsvp where email = ? ";
     public static final String INSERT_NEW_RSVP ="INSERT INTO rsvp (name, email, phone, confirmation_date, comments) VALUES (?, ?, ?, ?, ?)";
     public static final String UPDATE_RSVP_BY_EMAIL = "update rsvp set name =?, phone =?, confirmation_date = ?, comments = ? where email = ?";
     public static final String TOTAL_RSVP_COUNT = "select count(*) as total_count from rsvp";
+    //WORKSHOP 23
     public static final String ORDER_DETAILS_WITH_DISCOUNT_QUERY ="select o."+ "id as order_id, DATE_FORMAT(o.order_date, \"%d/%m/%Y\") as order_date, o."+ "customer_id,sum(od.quantity * od.unit_price) as total_price, sum(od." +"quantity * od.unit_price * od.discount) as discount, sum(od.quantity "+"* od.unit_price) - sum(od.quantity * od.unit_price * od.discount) as "+"discounted_price,sum(od.quantity * p.standard_cost) as cost_price from "+"Orders o left join Order_details od on o.id = od.order_id left join "+"products p on od.product_id = p.id where o.id = ?";
+    //WORKSHOP 24
+    public static final String GET_ALL_PRODUCTS = "select * from fruits_products";
+    public static final String INSERT_PURCHASE_ORDER = "insert into purchase_order(order_id, order_date, customer_name, ship_address, notes, tax ) values (?, SYSDATE(), ?, ?, ?, 0.05)";
+    public static final String INSERT_PURCHASE_ORDER_DETAILS = "insert into purchase_order_details(product, unit_price, discount, quantity, order_id) values (?,?,?,?,?)";    
+
+
+    //ROWMAPPER CLASS
+    public class CustomerRowMapper implements RowMapper<Customer> {
+
+    @Override
+    public Customer mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Customer customer = new Customer();
+
+        customer.setId(rs.getInt("id"));
+        customer.setCompany(rs.getString("company"));
+        customer.setLastName(rs.getString("last_name"));
+        customer.setFirstName(rs.getString("first_name"));
+
+        return customer;
+    }
+
+    //CREATE OBJECT FROM ROWSET
+     public static Order create(SqlRowSet rs) {
+        Order order = new Order();
+        Customer customer = new Customer();
+
+        customer.setId(rs.getInt("customer_id"));
+        order.setCustomer(customer);
+        order.setId(rs.getInt("order_id"));
+        order.setShipName(rs.getString("ship_name"));
+        order.setShippingFee(rs.getDouble("shipping_fee"));
+
+        return order;
+    }
+
+        //QUERY FOR ROWSET - CREATE FROM ROWSET WITH OBJECT VARARGS
+    public List<Customer> getAllCustomer(Integer offset, Integer limit) {
+
+        List<Customer> csts = new ArrayList<Customer>();
+
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_ALL_CUSTOMERS,
+                offset, limit);
+
+        while (rs.next()) {
+            csts.add(Customer.create(rs));
+        }
+
+        return csts;
+    }
+
+    //QUERY - USING ROWMAPPER
+    public Customer findCustomerById(Integer id) {
+
+        List<Customer> customers = jdbcTemplate.query(SELECT_CUSTOMER_BY_ID, new CustomerRowMapper(),
+                new Object[] { id });
+
+        return customers.get(0);
+
+    }
+
+    //QUERY FOR ROWSET - USING ROWSET AND OBJECT ARRAY
+     public List<Order> getCustomerOrders(Integer id)
+     {
+        List<Order> orders = new ArrayList<Order>();
+        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_ORDERS_FOR_CUSTOMERS,
+        new Object[] { id });
+
+        while (rs.next()) {
+            orders.add(Order.create(rs));
+        }
+
+        return orders;
+     }
 
     //QUERY FOR ROWSET
     public List<RSVP> getAllRSVP() {
@@ -120,41 +196,54 @@
         return orderDetailsList.get(0);
     }
 
-    //QUERY FOR ROWSET - CREATE FROM ROWSET WITH OBJECT VARARGS
-    public List<Customer> getAllCustomer(Integer offset, Integer limit) {
+    //USING A LAMBDA ROWMAPPING
+    public List<FruitProducts> getProducts() {
+        String query = GET_ALL_PRODUCTS;
 
-        List<Customer> csts = new ArrayList<Customer>();
-
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_ALL_CUSTOMERS,
-                offset, limit);
-
-        while (rs.next()) {
-            csts.add(Customer.create(rs));
-        }
-
-        return csts;
+        return jdbcTemplate.query(query, (rs, rownum) -> {
+            FruitProducts fruitProducts = new FruitProducts();
+            fruitProducts.setId(rs.getInt("id"));
+            fruitProducts.setName(rs.getString("name"));
+            fruitProducts.setStandardPrice(rs.getBigDecimal("standard_price"));
+            fruitProducts.setDiscount(rs.getBigDecimal("discount"));
+            return fruitProducts;
+        });
     }
 
-    //QUERY - USING ROWMAPPER
-    public Customer findCustomerById(Integer id) {
+    //USING BATCH UPDATE METHOD
+    public void addLineItems(List<LineItem> lineItems, String orderId) {
+        List<Object[]> data = lineItems.stream()
+                .map(li -> {
+                    Object[] l = new Object[5];
+                    l[0] = li.getProduct();
+                    l[1] = OrderUtility.calculateUnitPrice(li.getProduct(), li.getQuantity());
+                    l[2] = discount;
+                    l[3] = li.getQuantity();
+                    l[4] = orderId;
+                    return l;
+                })
+                .toList();
 
-        List<Customer> customers = jdbcTemplate.query(SELECT_CUSTOMER_BY_ID, new CustomerRowMapper(),
-                new Object[] { id });
-
-        return customers.get(0);
-
+        // product, unit_price, discount, quantity, order_id
+        jdbcTemplate.batchUpdate(INSERT_PURCHASE_ORDER_DETAILS, data);
     }
 
-    //QUERY FOR ROWSET - USING ROWSET AND OBJECT ARRAY
-     public List<Order> getCustomerOrders(Integer id)
-     {
-        List<Order> orders = new ArrayList<Order>();
-        SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_ORDERS_FOR_CUSTOMERS,
-        new Object[] { id });
+    //USING TRANSACTIONS
+     @Transactional(rollbackFor = OrderException.class)
+    public void createOrder(PurchaseOrder purchaseOrder) throws OrderException {
+        // create order id
+        Random rand = new Random();
+        int ordId = rand.nextInt(10000000);
+        String orderId = String.valueOf(ordId);
 
-        while (rs.next()) {
-            orders.add(Order.create(rs));
+        purchaseOrder.setOrderId(ordId);
+        FruitProducts.fruitProducts = itemRepository.getProducts();
+
+        purchaseOrderRepository.insertPurchaseOrder(purchaseOrder);
+
+        if (purchaseOrder.getLineItems().size() > 5) {
+            throw new OrderException("Can not order more than 5 items");
         }
+        itemRepository.addLineItems(purchaseOrder.getLineItems(), orderId);
+    }
 
-        return orders;
-     }

@@ -34,6 +34,8 @@ public class InventoryRepo {
         return empty_invt;
     }
 
+
+
     public List<String> getStock(){
         List<String> stocked_invt = new ArrayList<>();
         SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_STOCK);

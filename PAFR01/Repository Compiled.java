@@ -247,3 +247,86 @@
         itemRepository.addLineItems(purchaseOrder.getLineItems(), orderId);
     }
 
+
+/*
+Get a list of all customers
+offset - return the first result from n records from the first; n is the number given by offset parameter
+limit - return the number of records specified by limit, The default value for offset is 0 and limit is 5.
+GET /api/customers
+Accept: application/json
+
+Get the details of a customer with the customer’s id
+GET /api/customer/<customer_id>
+Accept: application/json
+Return a 404 and an appropriate error object if the customer does not exist
+
+Get all orders for a customer
+GET /api/customer/<customer_id>/orders
+Accept: application/json
+This endpoint returns an array of orders in JSON. If the customer does not 
+have any orders, the endpoint should return an empty array
+Return a 404 and an appropriate error object if the customer does not exist. 
+
+
+
+
+Write a HTML form to search for the total price of an order and the discount 
+that was given. When a user enters an order number, send the following HTTP 
+request is made to the SpringBoot backend
+GET /order/total/<order_id>
+Accept: text/html
+The Spring Boot application returns the following details 
+- Order id
+- Order date – order_date
+- Customer id – customer_id
+- Total – price of the order
+- Computed from order_details – quantity * unit_price * discount
+- Cost price
+- Computed from products – quantity * standard_cost
+Return an appropriate error message if the order is not found
+
+
+Get all RSVPs - get all the RSVPs from the database
+GET /api/rsvps
+Accept: application/json
+
+
+Search for a RSVP - search a RSVP by name (or parts of)
+GET /api/rsvp?q=fred
+Accept: application/json
+Return a 404 and an appropriate error object if you cannot find the RSVP. 
+This method should return all matching RSVP records.
+
+
+Add a new RSVP - add a new RSVP into the table. If it is an existing RSVP, 
+overwrite the RSVP in the table with this new RSVP
+POST /api/rsvp
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+Return a 201 if the operation is successful.
+
+Update an existing RSVP
+PUT /api/rsvp/fred@gmail.com
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+Return a 201 if the update operation is successful; a 404 if the email is not found
+
+Get the number of RSVPs - get the number of people who have RSVPs
+GET /api/rsvps/count
+Accept: application/json
+Return a 201 if the operation is successful.
+
+
+Write a HTML form to create an order (with order details) in the database.
+The form should use the following HTTP to send the details of the order to the 
+server
+POST /order
+Content-Type: application/x-www-form-urlencoded
+
+
+Write the Spring Boot application to process this request. The endpoint should 
+then insert the new order into the orders table. 
+Return appropriate error message if the insert fails.
+A new order involves inserting one or more records into orders and 
+order_details table
+*/

@@ -1,0 +1,46 @@
+[
+  {
+    $match: {
+      _id: ObjectId("5ca4bbcea2dd94ee58162a68"),
+    },
+  },
+  {
+    $project: {
+      tierDetails: {
+        $objectToArray: "$tier_and_details",
+      },
+    },
+  },
+];
+
+
+{
+    "_id": {
+      "$oid": "5ca4bbcea2dd94ee58162a68"
+    },
+    "tierDetails": [
+      {
+        "k": "0df078f33aa74a2e9696e0520c1a828a",
+        "v": {
+          "tier": "Bronze",
+          "id": "0df078f33aa74a2e9696e0520c1a828a",
+          "active": true,
+          "benefits": [
+            "sports tickets"
+          ]
+        }
+      },
+      {
+        "k": "699456451cc24f028d2aa99d7534c219",
+        "v": {
+          "tier": "Bronze",
+          "benefits": [
+            "24 hour dedicated line",
+            "concierge services"
+          ],
+          "active": true,
+          "id": "699456451cc24f028d2aa99d7534c219"
+        }
+      }
+    ]
+  }

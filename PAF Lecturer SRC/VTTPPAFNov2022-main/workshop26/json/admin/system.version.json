@@ -1,0 +1,10 @@
+[
+{
+    "_id" : "featureCompatibilityVersion",
+    "version" : "4.4"
+},
+{
+    "_id" : "authSchema",
+    "currentVersion" : NumberInt(5)
+}
+]

@@ -46,12 +46,6 @@ public class IOUtil {
     }
 
 
-    public static JsonObject getJSONObj(String jsonString){
-        StringReader sr = new StringReader(jsonString.toString());
-        JsonReader jsr = Json.createReader(sr);
-        return (JsonObject)jsr.read();
-    }
-
     // Age calculator, returns 0 if error.
     public int calculateAge(LocalDate dateOfBirth) {
         int age = 0;

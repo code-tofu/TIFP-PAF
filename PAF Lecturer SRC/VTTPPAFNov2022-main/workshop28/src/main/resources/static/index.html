@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Board Game Review</h1>
+
+    <form method="POST" action="/review">
+      <table>
+        <tr>
+            <td>Username:</td>
+            <td><input type="text" name="user" /></td>
+        </tr>
+        <tr>
+          <td>Rating:</td>
+          <td><select name="rating" id="rating">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+          </select></td>
+        </tr>
+        <tr>
+          <td>Comment:</td>
+          <td><input type="textarea" name="comment"/></td>
+        </tr>
+        <tr>
+            <td>Game Id:</td>
+            <td><input type="text" name="gameId" /></td>
+        </tr>
+        <tr>
+            <td>Board Game name:</td>
+            <td><input type="text" name="name" /></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><button type="submit">Save</button></td>
+        </tr>
+      </table>
+    </form>
+  </body>
+</html>

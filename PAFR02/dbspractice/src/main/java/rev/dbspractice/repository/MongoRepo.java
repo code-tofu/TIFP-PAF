@@ -1,17 +1,28 @@
 package rev.dbspractice.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.MongoExpression;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationExpression;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ObjectOperators;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
+import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation.AddFieldsOperationBuilder;
+import org.springframework.data.mongodb.core.aggregation.StringOperators.Concat;
+import org.springframework.data.mongodb.core.aggregation.VariableOperators.Map;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
@@ -25,7 +36,11 @@ import rev.dbspractice.model.MongoReview;
 
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.aggregation.LimitOperation;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 
 @Repository
 public class MongoRepo {
@@ -58,7 +73,7 @@ public class MongoRepo {
         Aggregation pipeline = Aggregation.newAggregation(matchObjectID, projectTierDetails);
 
         AggregationResults<Document> result = mongoTemplate.aggregate(pipeline, "customers", Document.class);
-        return result.iterator().next();
+        return result.getRawResults();
         // getMappedResults() returns List<Document> based on
         // AggregationResults<Document>
         // public class AggregationResults<T> implements Iterable<T>
@@ -155,6 +170,70 @@ public class MongoRepo {
     public List<String> getCuisinesByBorough(String boroughName) {
         return mongoTemplate.findDistinct(new Query(Criteria.where("borough").is(boroughName)),"cuisine", "restaurants", String.class);
 	}
+
+    public Document getReviewsByGame(int id){
+        MatchOperation matchStage = Aggregation.match(Criteria.where("gid").is(id));
+        LookupOperation lookupStage = Aggregation.lookup("game_comment", "gid", "gid", "reviews");
+
+        ProjectionOperation projectStage = Aggregation.project(
+            "_id","gid", "name", "year", "ranking", "users_rated", "url","image")
+
+            .and(
+                Map.itemsOf("reviews._id")
+                .as("review_id")
+                .andApply(
+                    Concat.stringValue("/review/").concatValueOf(
+                AggregationExpression.from(
+                    MongoExpression.create("""
+                        $toString: "$$review_id"
+                        """)
+                )
+                    )))
+            .as("reviews")
+            ;
+
+        AddFieldsOperationBuilder addTimestamp = Aggregation.addFields();
+        addTimestamp.addFieldWithValue("timestamp", LocalDateTime.now());
+        AddFieldsOperation addTimestepStage = addTimestamp.build();
+
+        Aggregation pipeline = Aggregation.newAggregation(matchStage,lookupStage,projectStage,addTimestepStage);
+        AggregationResults<Document> docReviews = mongoTemplate.aggregate(pipeline, "game", Document.class);
+        
+        if(docReviews.iterator().hasNext()) return docReviews.getRawResults();
+        return null;
+    }
+
+
+    public List<Document> getMaxMinReviews(String maxmin,int limit){
+
+        SortOperation sortStage;
+        GroupOperation groupStage;
+        if(maxmin.equals("highest")){
+            sortStage = Aggregation.sort(Sort.by(Direction.DESC,"rating"));
+            groupStage = Aggregation.group("gid")
+                            .max("rating").as("max")
+                            .first("$$ROOT").as("review");
+        } else {
+            sortStage = Aggregation.sort(Sort.by(Direction.ASC,"rating"));
+            groupStage = Aggregation.group("gid")
+            .min("rating").as("min")
+            .first("$$ROOT").as("review");
+        }   
+        LookupOperation lookupStage = Aggregation.lookup("game", "_id", "gid", "game");
+        ProjectionOperation projectStage = Aggregation.project("$_id","$game.name","$max","$review.user","$review.c_text","$review.c_id");
+        AggregationOperation unwindStage = Aggregation.unwind("$name");
+        LimitOperation limitStage = Aggregation.limit(limit);
+        Aggregation pipeline = Aggregation.newAggregation(sortStage,groupStage,lookupStage,projectStage,unwindStage, limitStage);
+        AggregationResults<Document> docReviews = mongoTemplate.aggregate(pipeline, "game_comment", Document.class);
+
+        List<Document> gameReviews = new ArrayList<>();
+        Iterator<Document> iter = docReviews.iterator();
+        while(iter.hasNext()){
+            gameReviews.add(iter.next());
+        }
+        return gameReviews;
+    }
+
 }
 
 // count

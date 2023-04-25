@@ -177,5 +177,29 @@ public class MongoRestController {
         .contentType(MediaType.APPLICATION_JSON)
         .body(MongoReview.jsonReviewFromDoc(existingReview, true).toString());
     }
+
+    @GetMapping("/game/{id}/reviews")
+    public ResponseEntity<String> getReviewsbyGame(@PathVariable String id){
+        Document doc = mongoRepo.getReviewsByGame(Integer.parseInt(id));
+        if (null == doc) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(
+                    (Json.createObjectBuilder().add("404 NOT_FOUND", "Account Does Not Exist").build().toString()));
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(doc.toJson().toString());
+    }
+
+    @GetMapping("/games/{maxmin}")
+    public ResponseEntity<String> getMaxMinReviewsbyGame(@PathVariable String maxmin, @RequestParam(defaultValue = "10") String limit){
+        List<Document> queryList = mongoRepo.getMaxMinReviews(maxmin,Integer.parseInt(limit));
+        if (queryList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(
+                    (Json.createObjectBuilder().add("404 NOT_FOUND", "No Results Found").build().toString()));
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(queryList.toString());
+    }
 }
 

@@ -5,16 +5,16 @@ import java.time.LocalDate;
 // Task 4
 public class Task {
 
-    private String task_id;
+    private int task_id;
     private String description;
-    private String priority;
+    private int priority;
     private LocalDate dueDate;
 
-    public String getTask_id() {
+    public int getTask_id() {
         return task_id;
     }
 
-    public void setTask_id(String task_id) {
+    public void setTask_id(int task_id) {
         this.task_id = task_id;
     }
 
@@ -26,14 +26,6 @@ public class Task {
         this.description = description;
     }
 
-    public String getPriority() {
-        return priority;
-    }
-
-    public void setPriority(String priority) {
-        this.priority = priority;
-    }
-
     public LocalDate getDueDate() {
         return dueDate;
     }
@@ -42,19 +34,27 @@ public class Task {
         this.dueDate = dueDate;
     }
 
-    public Task() {
+    public int getPriority() {
+        return priority;
     }
 
-    public Task(String description, String priority, LocalDate dueDate) {
-        this.description = description;
+    public void setPriority(int priority) {
         this.priority = priority;
-        this.dueDate = dueDate;
+    }
+
+    public Task() {
     }
 
     @Override
     public String toString() {
         return "Task [task_id=" + task_id + ", description=" + description + ", priority=" + priority + ", dueDate="
                 + dueDate + "]";
+    }
+
+    public Task(String description, int priority, LocalDate dueDate) {
+        this.description = description;
+        this.priority = priority;
+        this.dueDate = dueDate;
     }
 
 }

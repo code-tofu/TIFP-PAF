@@ -29,13 +29,37 @@ LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;
 SELECT * FROM users;
 
-/*
-+----------+----------+--------+
-| user_id  | username | name   |
-+----------+----------+--------+
-| 1b80114c | fred     | Fred   |
-| 66223e28 | betty    | Betty  |
-| a8b9800d | barney   | Barney |
-| cf66dae3 | wilma    | Wilma  |
-+----------+----------+--------+
-*/
+-- +----------+----------+--------+
+-- | user_id  | username | name   |
+-- +----------+----------+--------+
+-- | 1b80114c | fred     | Fred   |
+-- | 66223e28 | betty    | Betty  |
+-- | a8b9800d | barney   | Barney |
+-- | cf66dae3 | wilma    | Wilma  |
+-- +----------+----------+--------+
+
+
+CREATE TABLE task(
+task_id INT AUTO_INCREMENT NOT NULL,
+description VARCHAR(255) NOT NULL,
+priority INT NOT NULL,
+due_date DATE NOT NULL,
+user_id VARCHAR(8) NOT NULL,
+PRIMARY KEY (task_id),
+FOREIGN KEY (user_id) REFERENCES users(user_id),
+CONSTRAINT priority CHECK (priority IN (1,2,3))
+);
+
+DESC task;
+
+-- +-------------+--------------+------+-----+---------+----------------+
+-- | Field       | Type         | Null | Key | Default | Extra          |
+-- +-------------+--------------+------+-----+---------+----------------+
+-- | task_id     | int          | NO   | PRI | NULL    | auto_increment |
+-- | description | varchar(255) | NO   |     | NULL    |                |
+-- | priority    | int          | NO   |     | NULL    |                |
+-- | due_date    | date         | NO   |     | NULL    |                |
+-- | user_id     | varchar(8)   | NO   | MUL | NULL    |                |
+-- +-------------+--------------+------+-----+---------+----------------+
+
+

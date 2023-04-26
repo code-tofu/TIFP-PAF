@@ -17,7 +17,7 @@ import static ibf2022.paf.assessment.server.repositories.DBQueries.*;
 public class UserRepository {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     public Optional<User> findUserByUsername(String username) {
         SqlRowSet rs = jdbcTemplate.queryForRowSet(SELECT_USER_BY_USERNAME, username);
@@ -37,6 +37,8 @@ public class UserRepository {
         int result = jdbcTemplate.update(INSERT_NEW_USER, newId, user.getUsername(), user.getName());
         if (result == 1)
             return newId;
+
+        // should i keep this?
         throw new Exception("Insert User Error");
     }
 }

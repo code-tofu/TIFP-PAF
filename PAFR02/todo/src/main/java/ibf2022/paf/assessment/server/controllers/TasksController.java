@@ -54,11 +54,11 @@ public class TasksController {
         System.out.println("Tasks_Submitted:" + i + "/Tasks_Inserted:" + taskCount);
 
         // NOT WORKING YET
-        ModelAndView MAV = new ModelAndView("result");
-        MAV.addObject("taskCount", taskCount);
-        MAV.addObject("username", post.getFirst("username"));
-        MAV.setStatus(HttpStatus.OK);
-        return MAV;
+        ModelAndView mav = new ModelAndView("result");
+        mav.addObject("taskCount", taskCount);
+        mav.addObject("username", post.getFirst("username"));
+        mav.setStatus(HttpStatus.OK);
+        return mav;
     }
 
     // FOR TEST CONTROLLER

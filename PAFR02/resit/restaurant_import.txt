@@ -1,0 +1,6 @@
+TODO: Task 1 - Write the mongo import command here
+
+//LOCAL:
+mongoimport --db="sample_compiled" --collection='restaurants' --file="C:\Users\ftc_b\GIT\TFIP-PAF\PAFR02\resit\restaurants.json" --jsonArray
+
+//REMOTE:

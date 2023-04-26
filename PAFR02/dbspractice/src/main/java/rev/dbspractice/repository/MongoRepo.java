@@ -20,8 +20,11 @@ import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ObjectOperators;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
+import org.springframework.data.mongodb.core.aggregation.StringOperators;
+import org.springframework.data.mongodb.core.aggregation.UnwindOperation;
 import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation.AddFieldsOperationBuilder;
 import org.springframework.data.mongodb.core.aggregation.StringOperators.Concat;
+import org.springframework.data.mongodb.core.aggregation.StringOperators.ToLower;
 import org.springframework.data.mongodb.core.aggregation.VariableOperators.Map;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -84,31 +87,30 @@ public class MongoRepo {
         return mongoTemplate.find(query, Document.class, "customers");
     }
 
-
-    public Document getGameByID(int gID){
+    public Document getGameByID(int gID) {
         Query query = new Query(Criteria.where("gid").is(gID));
-        return mongoTemplate.findOne(query,Document.class,"game");
+        return mongoTemplate.findOne(query, Document.class, "game");
     }
 
-    public Document insertReview(JsonObject reviewJson){
+    public Document insertReview(JsonObject reviewJson) {
         Document gameDoc = getGameByID(reviewJson.getInt("ID"));
-        if(null==gameDoc){
+        if (null == gameDoc) {
             return gameDoc;
         }
         Document reviewDoc = new Document();
-        reviewDoc.append("user",reviewJson.getString("user"));
-        reviewDoc.append("rating",reviewJson.getJsonNumber("rating").doubleValue());
-        reviewDoc.append("comment",reviewJson.getString("comment"));
-        reviewDoc.append("ID",reviewJson.getInt("ID"));
+        reviewDoc.append("user", reviewJson.getString("user"));
+        reviewDoc.append("rating", reviewJson.getJsonNumber("rating").doubleValue());
+        reviewDoc.append("comment", reviewJson.getString("comment"));
+        reviewDoc.append("ID", reviewJson.getInt("ID"));
         reviewDoc.append("posted", LocalDate.now());
-        reviewDoc.append("name",gameDoc.getString("name"));
-        Document doc = mongoTemplate.insert(reviewDoc,"game_reviews");
+        reviewDoc.append("name", gameDoc.getString("name"));
+        Document doc = mongoTemplate.insert(reviewDoc, "game_reviews");
         return doc;
     }
 
-    public MongoReview insertReviewClass(JsonObject reviewJson){
+    public MongoReview insertReviewClass(JsonObject reviewJson) {
         Document gameDoc = getGameByID(reviewJson.getInt("gid"));
-        if(null==gameDoc){
+        if (null == gameDoc) {
             return null;
         }
         MongoReview newReview = new MongoReview();
@@ -118,120 +120,153 @@ public class MongoRepo {
         newReview.setPosted(LocalDate.now());
         newReview.setRating(reviewJson.getJsonNumber("rating").doubleValue());
         newReview.setUser(reviewJson.getString("name"));
-        MongoReview doc = mongoTemplate.insert(newReview,"game_reviews");
+        MongoReview doc = mongoTemplate.insert(newReview, "game_reviews");
         return doc;
 
     }
 
-    public UpdateResult updateReviewByID(String reviewId, JsonObject updateJson) throws HttpClientErrorException{
+    public UpdateResult updateReviewByID(String reviewId, JsonObject updateJson) throws HttpClientErrorException {
         Update updateDef = new Update();
         Document existingReview = findReviewByID(reviewId);
         if (null == existingReview) {
-            throw new 
-                HttpClientErrorException(HttpStatus.NOT_FOUND,"NOT FOUND: REVIEW DOES NOT EXIST");
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "NOT FOUND: REVIEW DOES NOT EXIST");
         }
 
-        if(updateJson.containsKey("comment"))
-            updateDef.set("comment",updateJson.getString("comment"));
-            String existingComment = existingReview.getString("comment");
-            double existingRating = existingReview.getDouble("rating");
-            Date existingDate = existingReview.getDate("posted");
-            Document existingHistory = new Document();
-            existingHistory.append("comment", existingComment);
-            existingHistory.append("rating",existingRating);
-            existingHistory.append("posted",existingDate);
-            updateDef.push("edited",existingHistory);
-        try{
+        if (updateJson.containsKey("comment"))
+            updateDef.set("comment", updateJson.getString("comment"));
+        String existingComment = existingReview.getString("comment");
+        double existingRating = existingReview.getDouble("rating");
+        Date existingDate = existingReview.getDate("posted");
+        Document existingHistory = new Document();
+        existingHistory.append("comment", existingComment);
+        existingHistory.append("rating", existingRating);
+        existingHistory.append("posted", existingDate);
+        updateDef.push("edited", existingHistory);
+        try {
             double updateRating = updateJson.getJsonNumber("rating").doubleValue();
-            updateDef.set("rating",updateRating);
-            updateDef.set("posted",LocalDate.now());
+            updateDef.set("rating", updateRating);
+            updateDef.set("posted", LocalDate.now());
             Document existingDoc = new Document();
-            existingDoc.append("rating",existingRating);
-            existingDoc.append("posted",existingDate);
-            updateDef.push("edited",existingDoc);
+            existingDoc.append("rating", existingRating);
+            existingDoc.append("posted", existingDate);
+            updateDef.push("edited", existingDoc);
             Query query = new Query(Criteria.where("_id").is(new ObjectId(reviewId)));
-            return mongoTemplate.updateFirst(query, updateDef,"game_reviews");
-        } catch (NullPointerException NPErr){
-                throw new 
-                HttpClientErrorException(HttpStatus.BAD_REQUEST,"BAD REQUEST: RATING NOT PROVIDED");
+            return mongoTemplate.updateFirst(query, updateDef, "game_reviews");
+        } catch (NullPointerException NPErr) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "BAD REQUEST: RATING NOT PROVIDED");
         }
     }
 
-    public Document findReviewByID(String reviewId){
-            ObjectId reviewObjectId = new ObjectId(reviewId);
-            return mongoTemplate.findById(reviewObjectId, Document.class,"game_reviews");
+    public Document findReviewByID(String reviewId) {
+        ObjectId reviewObjectId = new ObjectId(reviewId);
+        return mongoTemplate.findById(reviewObjectId, Document.class, "game_reviews");
     }
-
 
     public List<String> getCuisines() {
-        return mongoTemplate.findDistinct(new Query(),"cuisine", "restaurants", String.class);
-	}
+        return mongoTemplate.findDistinct(new Query(), "cuisine", "restaurants", String.class);
+    }
+
+    public List<String> getCuisinesReplaced() {
+        GroupOperation groupStage = Aggregation.group("null").addToSet("$cuisine").as("cuisines");
+        UnwindOperation unwindStage = Aggregation.unwind("cuisines");
+        ProjectionOperation replaceStage = Aggregation.project()
+                .and(StringOperators.ReplaceAll.value("$cuisines").find("/").replacement("_")).as("cuisines");
+        ProjectionOperation replaceSecondStage = Aggregation.project()
+                .and(StringOperators.ReplaceAll.value("$cuisines").find(",").replacement(" ")).as("cuisines");
+        ProjectionOperation projectStage = Aggregation.project("cuisines").and(ToLower.lower("$cuisines"))
+                .as("cuisines_lower");
+        SortOperation sortStage = Aggregation.sort(Sort.by(Direction.ASC, "cuisines_lower"));
+
+        Aggregation pipeline = Aggregation.newAggregation(groupStage, unwindStage, replaceStage, replaceSecondStage,
+                projectStage, sortStage);
+        AggregationResults<Document> results = mongoTemplate.aggregate(pipeline, "restaurants", Document.class);
+        List<Document> resultList = results.getMappedResults();
+        List<String> cuisines = new ArrayList<>();
+        for (Document doc : resultList) {
+            cuisines.add(doc.getString("cuisines"));
+        }
+        return cuisines;
+
+    }
 
     public List<String> getCuisinesByBorough(String boroughName) {
-        return mongoTemplate.findDistinct(new Query(Criteria.where("borough").is(boroughName)),"cuisine", "restaurants", String.class);
-	}
+        return mongoTemplate.findDistinct(new Query(Criteria.where("borough").is(boroughName)), "cuisine",
+                "restaurants", String.class);
+    }
 
-    public Document getReviewsByGame(int id){
+    public Document getReviewsByGame(int id) {
         MatchOperation matchStage = Aggregation.match(Criteria.where("gid").is(id));
         LookupOperation lookupStage = Aggregation.lookup("game_comment", "gid", "gid", "reviews");
 
         ProjectionOperation projectStage = Aggregation.project(
-            "_id","gid", "name", "year", "ranking", "users_rated", "url","image")
+                "_id", "gid", "name", "year", "ranking", "users_rated", "url", "image")
 
-            .and(
-                Map.itemsOf("reviews._id")
-                .as("review_id")
-                .andApply(
-                    Concat.stringValue("/review/").concatValueOf(
-                AggregationExpression.from(
-                    MongoExpression.create("""
-                        $toString: "$$review_id"
-                        """)
-                )
-                    )))
-            .as("reviews")
-            ;
+                .and(
+                        Map.itemsOf("reviews._id")
+                                .as("review_id")
+                                .andApply(
+                                        Concat.stringValue("/review/").concatValueOf(
+                                                AggregationExpression.from(
+                                                        MongoExpression.create("""
+                                                                $toString: "$$review_id"
+                                                                """)))))
+                .as("reviews");
 
         AddFieldsOperationBuilder addTimestamp = Aggregation.addFields();
         addTimestamp.addFieldWithValue("timestamp", LocalDateTime.now());
         AddFieldsOperation addTimestepStage = addTimestamp.build();
 
-        Aggregation pipeline = Aggregation.newAggregation(matchStage,lookupStage,projectStage,addTimestepStage);
+        Aggregation pipeline = Aggregation.newAggregation(matchStage, lookupStage, projectStage, addTimestepStage);
         AggregationResults<Document> docReviews = mongoTemplate.aggregate(pipeline, "game", Document.class);
-        
-        if(docReviews.iterator().hasNext()) return docReviews.getRawResults();
+
+        if (docReviews.iterator().hasNext())
+            return docReviews.getRawResults();
         return null;
     }
 
-
-    public List<Document> getMaxMinReviews(String maxmin,int limit){
+    public List<Document> getMaxMinReviews(String maxmin, int limit) {
 
         SortOperation sortStage;
         GroupOperation groupStage;
-        if(maxmin.equals("highest")){
-            sortStage = Aggregation.sort(Sort.by(Direction.DESC,"rating"));
+        if (maxmin.equals("highest")) {
+            sortStage = Aggregation.sort(Sort.by(Direction.DESC, "rating"));
             groupStage = Aggregation.group("gid")
-                            .max("rating").as("max")
-                            .first("$$ROOT").as("review");
+                    .max("rating").as("max")
+                    .first("$$ROOT").as("review");
         } else {
-            sortStage = Aggregation.sort(Sort.by(Direction.ASC,"rating"));
+            sortStage = Aggregation.sort(Sort.by(Direction.ASC, "rating"));
             groupStage = Aggregation.group("gid")
-            .min("rating").as("min")
-            .first("$$ROOT").as("review");
-        }   
+                    .min("rating").as("min")
+                    .first("$$ROOT").as("review");
+        }
         LookupOperation lookupStage = Aggregation.lookup("game", "_id", "gid", "game");
-        ProjectionOperation projectStage = Aggregation.project("$_id","$game.name","$max","$review.user","$review.c_text","$review.c_id");
+        ProjectionOperation projectStage = Aggregation.project("$_id", "$game.name", "$max", "$review.user",
+                "$review.c_text", "$review.c_id");
         AggregationOperation unwindStage = Aggregation.unwind("$name");
         LimitOperation limitStage = Aggregation.limit(limit);
-        Aggregation pipeline = Aggregation.newAggregation(sortStage,groupStage,lookupStage,projectStage,unwindStage, limitStage);
+        Aggregation pipeline = Aggregation.newAggregation(sortStage, groupStage, lookupStage, projectStage, unwindStage,
+                limitStage);
         AggregationResults<Document> docReviews = mongoTemplate.aggregate(pipeline, "game_comment", Document.class);
 
         List<Document> gameReviews = new ArrayList<>();
         Iterator<Document> iter = docReviews.iterator();
-        while(iter.hasNext()){
+        while (iter.hasNext()) {
             gameReviews.add(iter.next());
         }
         return gameReviews;
+    }
+
+    public List<Document> getSortedGames(String direction, int limit) {
+        ProjectionOperation projectStage = Aggregation.project("name").and(ToLower.lower("$name")).as("name_lower");
+        SortOperation sortStage = Aggregation.sort(Sort.by(Direction.ASC, "name_lower"));
+        LimitOperation limitStage = Aggregation.limit(limit);
+        if (direction.equals("desc"))
+            sortStage = Aggregation.sort(Sort.by(Direction.DESC, "name_lower"));
+
+        Aggregation pipeline = Aggregation.newAggregation(projectStage, sortStage, limitStage);
+        AggregationResults<Document> results = mongoTemplate.aggregate(pipeline, "game", Document.class);
+        List<Document> resultList = results.getMappedResults();
+        return resultList;
     }
 
 }

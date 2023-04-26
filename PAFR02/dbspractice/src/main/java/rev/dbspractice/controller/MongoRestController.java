@@ -79,33 +79,44 @@ public class MongoRestController {
                 .body(customerList.toString());
     }
 
-
     @GetMapping("/getCuisines")
-    public ResponseEntity<String> getCuisines(){
+    public ResponseEntity<String> getCuisines() {
         List<String> queryList = mongoRepo.getCuisines();
         if (queryList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(
                     (Json.createObjectBuilder().add("404 NOT_FOUND", "No Results Found").build().toString()));
         }
         return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(queryList.toString());
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(queryList.toString());
+    }
+
+    @GetMapping("/getCuisinesReplaced")
+    public ResponseEntity<String> getCuisinesReplaced() {
+        List<String> queryList = mongoRepo.getCuisinesReplaced();
+        if (queryList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(
+                    (Json.createObjectBuilder().add("404 NOT_FOUND", "No Results Found").build().toString()));
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(queryList.toString());
     }
 
     @GetMapping("/getCuisinesByBorough/{boroughName}")
-    public ResponseEntity<String> getCuisinesByBorough(@PathVariable String boroughName){
+    public ResponseEntity<String> getCuisinesByBorough(@PathVariable String boroughName) {
         List<String> queryList = mongoRepo.getCuisinesByBorough(boroughName);
         if (queryList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(
                     (Json.createObjectBuilder().add("404 NOT_FOUND", "No Results Found").build().toString()));
         }
         return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(queryList.toString());
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(queryList.toString());
     }
 
     @GetMapping("/getGameByID/{id}")
-    public ResponseEntity<String> getGameByID(@PathVariable String id){
+    public ResponseEntity<String> getGameByID(@PathVariable String id) {
         Document doc = mongoRepo.getGameByID(Integer.parseInt(id));
         if (null == doc) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(
@@ -113,11 +124,11 @@ public class MongoRestController {
         }
         return ResponseEntity.status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(doc.toString()); 
+                .body(doc.toString());
     }
 
-    @PostMapping(path="/postReview",consumes="application/json")
-    public ResponseEntity<String> postNewReview(@RequestBody String reviewPayload){
+    @PostMapping(path = "/postReview", consumes = "application/json")
+    public ResponseEntity<String> postNewReview(@RequestBody String reviewPayload) {
 
         JsonObject reviewJson = Utils.getJSONObj(reviewPayload);
         Document doc = mongoRepo.insertReview(reviewJson);
@@ -126,12 +137,12 @@ public class MongoRestController {
                     (Json.createObjectBuilder().add("404 NOT_FOUND", "Game Does Not Exist").build().toString()));
         }
         return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(doc.toString()); 
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(doc.toString());
     }
 
-    @PostMapping(path="/postReviewClass",consumes="application/json")
-    public ResponseEntity<String> postNewReviewClass(@RequestBody String reviewPayload){
+    @PostMapping(path = "/postReviewClass", consumes = "application/json")
+    public ResponseEntity<String> postNewReviewClass(@RequestBody String reviewPayload) {
 
         JsonObject reviewJson = Utils.getJSONObj(reviewPayload);
         MongoReview doc = mongoRepo.insertReviewClass(reviewJson);
@@ -140,66 +151,79 @@ public class MongoRestController {
                     (Json.createObjectBuilder().add("404 NOT_FOUND", "Game Does Not Exist").build().toString()));
         }
         return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(doc.toString()); 
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(doc.toString());
     }
 
-    @PostMapping(path="/updateReview/{id}",consumes="application/json")
-    public ResponseEntity<String> updateReview(@RequestBody String updatePayload, @PathVariable String id){
+    @PostMapping(path = "/updateReview/{id}", consumes = "application/json")
+    public ResponseEntity<String> updateReview(@RequestBody String updatePayload, @PathVariable String id) {
 
         JsonObject updateJson = Utils.getJSONObj(updatePayload);
         UpdateResult updateRes = mongoRepo.updateReviewByID(id, updateJson);
         return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(updateRes.toString()); 
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(updateRes.toString());
     }
 
     @GetMapping("/review/{id}")
-    public ResponseEntity<String> getReviewByID(@PathVariable String id){
+    public ResponseEntity<String> getReviewByID(@PathVariable String id) {
         Document existingReview = mongoRepo.findReviewByID(id);
         if (null == existingReview) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(
                     (Json.createObjectBuilder().add("404 NOT_FOUND", "Review Does Not Exist").build().toString()));
         }
         return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(MongoReview.jsonReviewFromDoc(existingReview, false).toString());
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(MongoReview.jsonReviewFromDoc(existingReview, false).toString());
     }
 
     @GetMapping("/review/{id}/history")
-    public ResponseEntity<String> getHistoryByID(@PathVariable String id){
+    public ResponseEntity<String> getHistoryByID(@PathVariable String id) {
         Document existingReview = mongoRepo.findReviewByID(id);
         if (null == existingReview) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(
                     (Json.createObjectBuilder().add("404 NOT_FOUND", "Review Does Not Exist").build().toString()));
         }
         return ResponseEntity.status(HttpStatus.OK)
-        .contentType(MediaType.APPLICATION_JSON)
-        .body(MongoReview.jsonReviewFromDoc(existingReview, true).toString());
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(MongoReview.jsonReviewFromDoc(existingReview, true).toString());
     }
 
     @GetMapping("/game/{id}/reviews")
-    public ResponseEntity<String> getReviewsbyGame(@PathVariable String id){
+    public ResponseEntity<String> getReviewsbyGame(@PathVariable String id) {
         Document doc = mongoRepo.getReviewsByGame(Integer.parseInt(id));
         if (null == doc) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(
                     (Json.createObjectBuilder().add("404 NOT_FOUND", "Account Does Not Exist").build().toString()));
         }
         return ResponseEntity.status(HttpStatus.OK)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(doc.toJson().toString());
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(doc.toJson().toString());
     }
 
     @GetMapping("/games/{maxmin}")
-    public ResponseEntity<String> getMaxMinReviewsbyGame(@PathVariable String maxmin, @RequestParam(defaultValue = "10") String limit){
-        List<Document> queryList = mongoRepo.getMaxMinReviews(maxmin,Integer.parseInt(limit));
+    public ResponseEntity<String> getMaxMinReviewsbyGame(@PathVariable String maxmin,
+            @RequestParam(defaultValue = "10") String limit) {
+        List<Document> queryList = mongoRepo.getMaxMinReviews(maxmin, Integer.parseInt(limit));
         if (queryList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(
                     (Json.createObjectBuilder().add("404 NOT_FOUND", "No Results Found").build().toString()));
         }
         return ResponseEntity.status(HttpStatus.OK)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(queryList.toString());
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(queryList.toString());
+    }
+
+    @GetMapping("/games/sorted/{direction}")
+    public ResponseEntity<String> getSortedGameList(@PathVariable String direction,
+            @RequestParam(defaultValue = "20") String limit) {
+        List<Document> queryList = mongoRepo.getSortedGames(direction, Integer.parseInt(limit));
+        if (queryList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(
+                    (Json.createObjectBuilder().add("404 NOT_FOUND", "No Results Found").build().toString()));
+        }
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(queryList.toString());
     }
 }
-

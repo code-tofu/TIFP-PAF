@@ -26,6 +26,7 @@ import ibf2022.paf.assessment.server.services.TodoService;
 import jakarta.json.Json;
 
 // Task 4, Task 8
+// @RestController
 @Controller
 public class TasksController {
 
@@ -58,6 +59,7 @@ public class TasksController {
         mav.addObject("taskCount", taskCount);
         mav.addObject("username", post.getFirst("username"));
         mav.setStatus(HttpStatus.OK);
+        // mav.setStatus(HttpStatusCode.valueOf(200));
         return mav;
     }
 
